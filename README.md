@@ -2,6 +2,8 @@
 
 本仓库是一个基于 **Soybean Admin** 前端模版与 **NestJS** 后端框架构建的全栈后台管理系统。
 
+> **注意**：本项目强制要求使用 **pnpm** 管理依赖。请勿使用 npm 或 yarn。
+
 - 前端：`soybean-admin-frontend`（Vue3 + Vite + TypeScript，基于 SoybeanAdmin）
 - 后端：`soybean-admin-backend`（NestJS + TypeORM + MySQL + JWT）
 
@@ -17,7 +19,7 @@
 ## 环境要求
 
 - Node.js >= 20
-- pnpm（前端依赖 pnpm；后端也建议使用 pnpm 安装）
+- **pnpm >= 9** (强制要求：前端和后端均须使用 pnpm 安装依赖)
 - MySQL >= 8.0
 
 ## 快速开始（推荐：Seed 脚本初始化）
@@ -98,6 +100,15 @@ pnpm install
 ```bash
 pnpm dev
 ```
+
+## 常用命令汇总
+
+| 任务 | 后端 (soybean-admin-backend) | 前端 (soybean-admin-frontend) |
+| :--- | :--- | :--- |
+| **安装依赖** | `pnpm install` | `pnpm install` |
+| **启动开发服务** | `pnpm run start:dev` | `pnpm dev` |
+| **项目打包** | `pnpm run build` | `pnpm build` |
+| **数据库种子** | `pnpm run seed` | - |
 
 访问地址（默认）：
 

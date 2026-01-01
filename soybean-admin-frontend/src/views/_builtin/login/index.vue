@@ -42,11 +42,13 @@ const activeModule = computed<LoginModule>(() => {
       <!-- 红色球 - 右上 -->
       <div class="animate-float absolute top-10% size-350px bg-[#EA4335] opacity-30 blur-90px -right-5%"></div>
       <!-- 黄色球 - 左下 -->
-      <div class="animate-float-delayed absolute left-10% size-300px bg-[#FBBC05] opacity-30 blur-80px -bottom-10%">
-      </div>
+      <div
+        class="animate-float-delayed absolute left-10% size-300px bg-[#FBBC05] opacity-30 blur-80px -bottom-10%"
+      ></div>
       <!-- 绿色球 - 右下 -->
-      <div class="animate-float-slow absolute size-450px bg-[#34A853] opacity-30 blur-110px -bottom-5% -right-10%">
-      </div>
+      <div
+        class="animate-float-slow absolute size-450px bg-[#34A853] opacity-30 blur-110px -bottom-5% -right-10%"
+      ></div>
     </div>
 
     <!-- 极简背景蒙层 -->
@@ -54,7 +56,8 @@ const activeModule = computed<LoginModule>(() => {
 
     <div class="absolute left-24px top-20px z-4 flex-y-center gap-14px lt-sm:left-14px lt-sm:top-14px">
       <div
-        class="size-56px overflow-hidden border border-white/30 rd-14px bg-white/70 shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-dark/70">
+        class="size-56px overflow-hidden border border-white/30 rd-14px bg-white/70 shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-dark/70"
+      >
         <img :src="logo" class="size-full object-cover" />
       </div>
       <div class="text-18px text-[#202124] font-800 tracking-tight lt-sm:text-16px dark:text-white">
@@ -62,8 +65,10 @@ const activeModule = computed<LoginModule>(() => {
       </div>
     </div>
 
-    <NCard :bordered="false"
-      class="relative z-4 w-450px border border-white/40 rd-24px bg-white/60 shadow-2xl backdrop-blur-2xl lt-sm:w-300px dark:border-white/10 dark:bg-dark/60">
+    <NCard
+      :bordered="false"
+      class="relative z-4 w-450px border border-white/40 rd-24px bg-white/60 shadow-2xl backdrop-blur-2xl lt-sm:w-300px dark:border-white/10 dark:bg-dark/60"
+    >
       <!-- 顶部分段色条 (Google 四色) -->
       <div class="absolute left-0 top-0 h-4px w-full flex overflow-hidden rd-t-24px">
         <div class="h-full w-1/4 bg-[#4285F4]"></div>
@@ -121,7 +126,6 @@ const activeModule = computed<LoginModule>(() => {
 }
 
 @keyframes float {
-
   0%,
   100% {
     transform: translate(0, 0) scale(1);

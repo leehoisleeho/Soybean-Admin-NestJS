@@ -54,18 +54,34 @@ async function handleSubmit() {
 <template>
   <NForm ref="formRef" :model="model" :rules="rules" size="large" :show-label="false" @keyup.enter="handleSubmit">
     <NFormItem path="userName">
-      <NInput v-model:value="model.userName" :placeholder="$t('page.login.common.userNamePlaceholder')" class="rd-4px"
-        autocomplete="off" />
+      <NInput
+        v-model:value="model.userName"
+        :placeholder="$t('page.login.common.userNamePlaceholder')"
+        class="rd-4px"
+        autocomplete="off"
+      />
     </NFormItem>
     <NFormItem path="password">
-      <NInput v-model:value="model.password" type="password" show-password-on="click"
-        :placeholder="$t('page.login.common.passwordPlaceholder')" class="rd-4px" autocomplete="off" />
+      <NInput
+        v-model:value="model.password"
+        type="password"
+        show-password-on="click"
+        :placeholder="$t('page.login.common.passwordPlaceholder')"
+        class="rd-4px"
+        autocomplete="off"
+      />
     </NFormItem>
     <div class="pb-14px">
       <NCheckbox v-model:checked="rememberMe">{{ $t('page.login.pwdLogin.rememberMe') }}</NCheckbox>
     </div>
-    <NButton type="primary" size="large" block :loading="authStore.loginLoading" class="h-44px rd-10px font-600"
-      @click="handleSubmit">
+    <NButton
+      type="primary"
+      size="large"
+      block
+      :loading="authStore.loginLoading"
+      class="h-44px rd-10px font-600"
+      @click="handleSubmit"
+    >
       {{ $t('common.confirm') }}
     </NButton>
   </NForm>

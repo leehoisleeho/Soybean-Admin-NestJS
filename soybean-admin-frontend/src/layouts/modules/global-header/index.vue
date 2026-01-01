@@ -49,12 +49,6 @@ const { isFullscreen, toggle } = useFullscreen();
         :full="isFullscreen"
         @click="toggle"
       />
-      <LangSwitch
-        v-if="themeStore.header.multilingual.visible"
-        :lang="appStore.locale"
-        :lang-options="appStore.localeOptions"
-        @change-lang="appStore.changeLocale"
-      />
       <ThemeSchemaSwitch
         v-if="themeStore.header.themeSchema.visible"
         :theme-schema="themeStore.themeScheme"

@@ -5,7 +5,7 @@ import { useBoolean } from '@sa/hooks';
 import { router } from '@/router';
 import { localStg } from '@/utils/storage';
 import { SetupStoreId } from '@/enum';
-import { $t, setLocale } from '@/locales';
+import { $t } from '@/locales';
 import { setDayjsLocale } from '@/locales/dayjs';
 import { useRouteStore } from '../route';
 import { useTabStore } from '../tab';
@@ -49,24 +49,7 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     routeStore.resetRouteCache();
   }
 
-  const locale = ref<App.I18n.LangType>(localStg.get('lang') || 'zh-CN');
-
-  const localeOptions: App.I18n.LangOption[] = [
-    {
-      label: '中文',
-      key: 'zh-CN'
-    },
-    {
-      label: 'English',
-      key: 'en-US'
-    }
-  ];
-
-  function changeLocale(lang: App.I18n.LangType) {
-    locale.value = lang;
-    setLocale(lang);
-    localStg.set('lang', lang);
-  }
+  const locale = ref<App.I18n.LangType>('zh-CN');
 
   /** Update document title by locale */
   function updateDocumentTitleByLocale() {
@@ -79,6 +62,9 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
 
   function init() {
     setDayjsLocale(locale.value);
+    updateDocumentTitleByLocale();
+    routeStore.updateGlobalMenusByLocale();
+    tabStore.updateTabsByLocale();
   }
 
   // watch store
@@ -112,21 +98,6 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
       },
       { immediate: true }
     );
-
-    // watch locale
-    watch(locale, () => {
-      // update document title by locale
-      updateDocumentTitleByLocale();
-
-      // update global menus by locale
-      routeStore.updateGlobalMenusByLocale();
-
-      // update tabs by locale
-      tabStore.updateTabsByLocale();
-
-      // set dayjs locale
-      setDayjsLocale(locale.value);
-    });
   });
 
   // cache mixSiderFixed
@@ -148,8 +119,6 @@ export const useAppStore = defineStore(SetupStoreId.App, () => {
     reloadPage,
     fullContent,
     locale,
-    localeOptions,
-    changeLocale,
     themeDrawerVisible,
     openThemeDrawer,
     closeThemeDrawer,

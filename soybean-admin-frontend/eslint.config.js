@@ -4,6 +4,9 @@ export default defineConfig(
   { vue: true, unocss: true },
   {
     rules: {
+      'prettier/prettier': 'off',
+      'sort-imports': 'off',
+      'import/order': 'warn',
       'vue/multi-word-component-names': [
         'warn',
         {

@@ -1,4 +1,4 @@
-# Soybean Admin NestJS (soybean-admin-nestjs)
+# Soybean Admin NestJS (soybean-admin-nestjs) `v0.9.0`
 
 本仓库是一个基于 **Soybean Admin** 前端模版与 **NestJS** 后端框架构建的全栈后台管理系统。
 

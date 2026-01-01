@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Soybean Admin" src="https://github.com/soybeanjs/soybean-admin/blob/main/public/logo.svg?raw=true" width="100">
+  <img alt="Soybean Admin" src="./soybean-admin-frontend/src/assets/imgs/logo.png" width="100">
   <h1>Soybean Admin NestJS</h1>
   <p>基于 <b>Soybean Admin</b> 与 <b>NestJS</b> 构建的全栈后台管理系统</p>
 

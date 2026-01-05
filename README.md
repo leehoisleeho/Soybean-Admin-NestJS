@@ -164,38 +164,33 @@ pnpm dev
 
 ### 1. 后端部署 (NestJS)
 
-1. **环境准备**：确保服务器已安装 Node.js (>=20), MySQL (>=8.0), PM2 (可选但推荐)。
-2. **构建项目**：
+**建议上传的文件清单：**
+- `soybean-admin-backend/dist/` (构建后的 JS 文件)
+- `soybean-admin-backend/package.json`
+- `soybean-admin-backend/pnpm-lock.yaml`
+- `soybean-admin-backend/.env` (生产环境配置)
+
+**部署步骤：**
+1. **环境准备**：确保服务器已安装 Node.js (>=20), MySQL (>=8.0), PM2。
+2. **上传文件**：将上述清单中的文件上传至服务器后端目录。
+3. **安装生产依赖**：
    ```bash
-   cd soybean-admin-backend
-   pnpm install
-   pnpm run build
+   pnpm install --prod
    ```
-3. **配置环境变量**：在服务器上创建 `.env` 文件，确保 `DB_` 相关的配置指向线上数据库。
-4. **初始化数据**：如果是首次部署，请运行种子脚本或导入 SQL。
-   ```bash
-   # 方式1：运行生产环境种子脚本
-   pnpm run seed:prod
-   
-   # 方式2：手动导入 soybean-admin-backend/init.sql 和根目录 init_data.sql
-   ```
-5. **启动服务** (推荐使用 PM2)：
+4. **启动服务**：
    ```bash
    pm2 start dist/main.js --name soybean-backend
    ```
 
 ### 2. 前端部署 (Vue3)
 
-1. **构建项目**：
-   ```bash
-   cd soybean-admin-frontend
-   pnpm install
-   pnpm build
-   ```
-2. **配置前端生产环境变量**：根据部署形态修改 `soybean-admin-frontend/.env.prod` 并重新构建：
-   - 前后端同域名、由 Nginx 转发 `/api`：`VITE_SERVICE_BASE_URL=/api`
-   - 前后端不同域名/端口：`VITE_SERVICE_BASE_URL=https://api.your-domain.com/api`
-3. **Nginx 配置**：将打包生成的 `dist` 目录上传至服务器，并配置 Nginx。
+**建议上传的文件清单：**
+- `soybean-admin-frontend/dist/` (静态资源文件)
+
+**部署步骤：**
+1. **构建项目**：在本地执行 `pnpm build`。
+2. **上传文件**：将 `dist` 目录内的所有文件上传至 Nginx 指定的静态资源目录。
+3. **Nginx 配置**：配置 Nginx 托管静态文件并转发 API 请求。
    
    示例 Nginx 配置：
    ```nginx

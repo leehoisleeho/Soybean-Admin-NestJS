@@ -24,3 +24,5 @@ pnpm-debug.log*
 # Temp files
 .tmp/
 .cache/
+
+项目优化指南.md

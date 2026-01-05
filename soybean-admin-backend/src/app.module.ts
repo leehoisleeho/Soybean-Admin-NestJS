@@ -26,8 +26,8 @@ import { RouteModule } from './modules/route/route.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        // 方案一：开发环境自动同步，生产环境禁用
-        synchronize: configService.get<string>('NODE_ENV') === 'development',
+        // 如果环境变量 DB_SYNC 为 true，则自动同步表结构
+        synchronize: configService.get<string>('DB_SYNC') === 'true',
         // 自动加载实体
         autoLoadEntities: true,
       }),
@@ -41,5 +41,5 @@ import { RouteModule } from './modules/route/route.module';
   controllers: [AppController],
   providers: [AppService],
 })
- 
+
 export class AppModule { }

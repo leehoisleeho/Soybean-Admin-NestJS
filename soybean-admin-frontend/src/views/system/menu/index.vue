@@ -8,8 +8,8 @@ import TableHeaderOperation from '@/components/advanced/table-header-operation.v
 import SvgIcon from '@/components/custom/svg-icon.vue';
 import MenuModal from './components/menu-modal.vue';
 
-let handleEdit: (id: string) => void = () => {};
-let handleAddChild: (parentId: string) => void = () => {};
+let handleEdit: (id: string) => void = () => { };
+let handleAddChild: (parentId: string) => void = () => { };
 
 const LOCAL_ICON_PREFIX = 'local:';
 
@@ -159,33 +159,15 @@ async function handleDelete(id: string) {
 
 <template>
   <div class="min-h-500px flex-col-stretch gap-16px overflow-hidden lt-sm:overflow-auto">
-    <NCard
-      :title="$t('page.manage.menu.title')"
-      :bordered="false"
-      size="small"
-      class="flex-1 overflow-hidden card-wrapper"
-    >
+    <NCard :title="$t('page.manage.menu.title')" :bordered="false" size="small"
+      class="flex-1 overflow-hidden card-wrapper">
       <template #header-extra>
-        <TableHeaderOperation
-          v-model:columns="columnChecks"
-          :disabled-delete="checkedRowKeys.length === 0"
-          :loading="loading"
-          @add="handleAdd"
-          @delete="onBatchDeleted"
-          @refresh="getData"
-        />
+        <TableHeaderOperation v-model:columns="columnChecks" :disabled-delete="checkedRowKeys.length === 0"
+          :loading="loading" @add="handleAdd" @delete="onBatchDeleted" @refresh="getData" />
       </template>
-      <NDataTable
-        v-model:checked-row-keys="checkedRowKeys"
-        :columns="columns"
-        :data="data"
-        size="small"
-        :max-height="600"
-        :loading="loading"
-        :row-key="row => row.id"
-        default-expand-all
-        class="flex-1 overflow-hidden"
-      />
+      <NDataTable v-model:checked-row-keys="checkedRowKeys" :columns="columns" :data="data" size="small"
+        :max-height="600" :loading="loading" :row-key="row => row.id" default-expand-all
+        class="flex-1 overflow-hidden" />
     </NCard>
 
     <MenuModal v-model:visible="drawerVisible" :type="operateType" :edit-data="editingData" @submitted="getData" />

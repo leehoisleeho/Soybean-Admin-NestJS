@@ -55,11 +55,7 @@ const activeModule = computed<LoginModule>(() => {
     <div class="absolute inset-0 z-2 backdrop-blur-100px dark:bg-black/20"></div>
 
     <div class="absolute left-24px top-20px z-4 flex-y-center gap-14px lt-sm:left-14px lt-sm:top-14px">
-      <div
-        class="size-56px overflow-hidden border border-white/30 rd-14px bg-white/70 shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-2xl dark:border-white/10 dark:bg-dark/70"
-      >
-        <img :src="logo" class="size-full object-cover" />
-      </div>
+      <img :src="logo" class="size-56px object-cover" />
       <div class="text-18px text-[#202124] font-800 tracking-tight lt-sm:text-16px dark:text-white">
         {{ $t('system.title') }}
       </div>

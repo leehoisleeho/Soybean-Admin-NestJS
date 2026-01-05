@@ -39,7 +39,7 @@ function transformUserListResponse(response: any): { data: any[]; pageNum: numbe
   };
 }
 
-let handleEdit: (id: string) => void = () => {};
+let handleEdit: (id: string) => void = () => { };
 
 const { columns, columnChecks, data, loading, getData, searchParams, resetSearchParams, mobilePagination } =
   useNaivePaginatedTable({
@@ -196,20 +196,12 @@ async function handleBatchDelete() {
       <NForm :model="searchParams" label-placement="left" :label-width="80">
         <NGrid cols="24" :x-gap="24">
           <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.user.userName')" path="username">
-            <NInput
-              v-model:value="searchParams.username"
-              :placeholder="$t('page.manage.user.form.userName')"
-              class="w-full"
-              clearable
-            />
+            <NInput v-model:value="searchParams.username" :placeholder="$t('page.manage.user.form.userName')"
+              class="w-full" clearable />
           </NFormItemGi>
           <NFormItemGi span="24 s:12 m:6" :label="$t('page.manage.user.userPhone')" path="phone">
-            <NInput
-              v-model:value="searchParams.phone"
-              :placeholder="$t('page.manage.user.form.userPhone')"
-              class="w-full"
-              clearable
-            />
+            <NInput v-model:value="searchParams.phone" :placeholder="$t('page.manage.user.form.userPhone')"
+              class="w-full" clearable />
           </NFormItemGi>
           <NFormItemGi span="24 s:24 m:12">
             <NSpace justify="end" class="w-full">
@@ -231,35 +223,15 @@ async function handleBatchDelete() {
       </NForm>
     </NCard>
 
-    <NCard
-      :title="$t('page.manage.user.title')"
-      :bordered="false"
-      size="small"
-      class="flex-1 overflow-hidden card-wrapper"
-    >
+    <NCard :title="$t('page.manage.user.title')" :bordered="false" size="small"
+      class="flex-1 overflow-hidden card-wrapper">
       <template #header-extra>
-        <TableHeaderOperation
-          v-model:columns="columnChecks"
-          :disabled-delete="checkedRowKeys.length === 0"
-          :loading="loading"
-          @add="handleAdd"
-          @delete="handleBatchDelete"
-          @refresh="getData"
-        />
+        <TableHeaderOperation v-model:columns="columnChecks" :disabled-delete="checkedRowKeys.length === 0"
+          :loading="loading" @add="handleAdd" @delete="handleBatchDelete" @refresh="getData" />
       </template>
-      <NDataTable
-        v-model:checked-row-keys="checkedRowKeys"
-        :columns="columns"
-        :data="data"
-        size="small"
-        :max-height="650"
-        :scroll-x="1100"
-        :loading="loading"
-        remote
-        :row-key="row => row.id"
-        :pagination="mobilePagination"
-        class="flex-1 overflow-hidden"
-      />
+      <NDataTable v-model:checked-row-keys="checkedRowKeys" :columns="columns" :data="data" size="small"
+        :max-height="650" :scroll-x="1100" :loading="loading" remote :row-key="row => row.id"
+        :pagination="mobilePagination" class="flex-1 overflow-hidden" />
     </NCard>
 
     <UserModal v-model:visible="drawerVisible" :type="operateType" :edit-data="editingData" @submitted="getData" />

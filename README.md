@@ -6,9 +6,9 @@
   <p>
     <img src="https://img.shields.io/badge/version-v0.9.0-blue.svg" alt="version">
     <img src="https://img.shields.io/badge/Vue-3.x-4fc08d.svg?logo=vue.js" alt="vue">
-    <img src="https://img.shields.io/badge/NestJS-10.x-E0234E.svg?logo=nestjs" alt="nestjs">
+    <img src="https://img.shields.io/badge/NestJS-11.x-E0234E.svg?logo=nestjs" alt="nestjs">
     <img src="https://img.shields.io/badge/TypeScript-5.x-3178c6.svg?logo=typescript" alt="typescript">
-    <img src="https://img.shields.io/badge/pnpm-9.x-f69220.svg?logo=pnpm" alt="pnpm">
+    <img src="https://img.shields.io/badge/pnpm-10.x-f69220.svg?logo=pnpm" alt="pnpm">
     <img src="https://img.shields.io/badge/MySQL-8.0-4479A1.svg?logo=mysql" alt="mysql">
   </p>
 </div>
@@ -37,7 +37,7 @@
 ## 🛠️ 环境要求
 
 - **Node.js**: >= 20
-- **pnpm**: >= 9 (强制要求)
+- **pnpm**: >= 10.5.0 (强制要求)
 - **MySQL**: >= 8.0
 
 ---
@@ -160,19 +160,67 @@ pnpm dev
 
 ---
 
-## 🏗️ 生产构建
+## 🏗️ 线上部署
 
-**后端**：
-```bash
-cd soybean-admin-backend
-pnpm run build
-pnpm run start:prod
-```
+### 1. 后端部署 (NestJS)
 
-**前端**：
-```bash
-cd soybean-admin-frontend
-pnpm build
-```
+1. **环境准备**：确保服务器已安装 Node.js (>=20), MySQL (>=8.0), PM2 (可选但推荐)。
+2. **构建项目**：
+   ```bash
+   cd soybean-admin-backend
+   pnpm install
+   pnpm run build
+   ```
+3. **配置环境变量**：在服务器上创建 `.env` 文件，确保 `DB_` 相关的配置指向线上数据库。
+4. **初始化数据**：如果是首次部署，请运行种子脚本或导入 SQL。
+   ```bash
+   # 方式1：运行生产环境种子脚本
+   pnpm run seed:prod
+   
+   # 方式2：手动导入 soybean-admin-backend/init.sql 和根目录 init_data.sql
+   ```
+5. **启动服务** (推荐使用 PM2)：
+   ```bash
+   pm2 start dist/main.js --name soybean-backend
+   ```
+
+### 2. 前端部署 (Vue3)
+
+1. **构建项目**：
+   ```bash
+   cd soybean-admin-frontend
+   pnpm install
+   pnpm build
+   ```
+2. **配置前端生产环境变量**：根据部署形态修改 `soybean-admin-frontend/.env.prod` 并重新构建：
+   - 前后端同域名、由 Nginx 转发 `/api`：`VITE_SERVICE_BASE_URL=/api`
+   - 前后端不同域名/端口：`VITE_SERVICE_BASE_URL=https://api.your-domain.com/api`
+3. **Nginx 配置**：将打包生成的 `dist` 目录上传至服务器，并配置 Nginx。
+   
+   示例 Nginx 配置：
+   ```nginx
+   server {
+       listen 80;
+       server_name your-domain.com;
+
+       location / {
+           root /path/to/soybean-admin-frontend/dist;
+           index index.html;
+           try_files $uri $uri/ /index.html;
+       }
+
+       location /api/ {
+           proxy_pass http://localhost:3000/api/;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+           proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+       }
+    }
+    ```
+
+### 3. 注意事项
+- 确保服务器安全组/防火墙已开放 80, 443 (前端) 和 3000 (后端，如果通过 Nginx 转发则可不开放) 端口。
+- 生产环境下 `NODE_ENV` 应设置为 `production`。
+- 建议配置 SSL 证书以启用 HTTPS。
 
 ---

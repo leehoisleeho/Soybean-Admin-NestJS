@@ -23,15 +23,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
       code = '8888'; // Frontend logout code
       msg = 'Unauthorized';
     } else if (typeof exceptionResponse === 'object') {
-        const res = exceptionResponse as any;
-        msg = Array.isArray(res.message) ? res.message.join(', ') : res.message;
-        // Keep original code if it exists, otherwise use status
-        code = res.code || String(status);
+      const res = exceptionResponse as any;
+      msg = Array.isArray(res.message) ? res.message.join(', ') : res.message;
+      // Keep original code if it exists, otherwise use status
+      code = res.code || String(status);
     } else {
-        msg = exceptionResponse as string;
+      msg = exceptionResponse as string;
     }
 
-    response.status(200).json({
+    response.status(status).json({
       code,
       data,
       msg,

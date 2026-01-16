@@ -18,16 +18,16 @@ function toOptionalBinary(value: any): 0 | 1 | undefined {
 
 function buildMenuPayload(data: any) {
   return {
-    parentId: data?.parentId || undefined,
+    parentId: data?.parentId || null,
     name: data?.name,
-    path: data?.path || undefined,
-    component: data?.component || undefined,
-    icon: data?.icon || undefined,
-    permission: data?.permission || undefined,
+    path: data?.path || '',
+    component: data?.component || '',
+    icon: data?.icon || '',
+    permission: data?.permission || '',
     sort: toOptionalNumber(data?.sort),
     status: toOptionalNumber(data?.status),
     visible: toOptionalBinary(data?.visible) ?? 0,
-    remark: data?.remark || undefined,
+    remark: data?.remark || '',
     type: toOptionalNumber(data?.type)
   };
 }

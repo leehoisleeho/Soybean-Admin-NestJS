@@ -4,7 +4,7 @@ import { IsString, IsInt, IsOptional, IsEnum, IsUUID, Min } from 'class-validato
 export class CreateMenuDto {
   @ApiProperty({ description: '父级菜单ID', required: false })
   @IsOptional()
-  @IsUUID()
+  @IsString()
   parentId?: string;
 
   @ApiProperty({ description: '菜单名称' })
@@ -27,12 +27,11 @@ export class CreateMenuDto {
   redirect?: string;
 
   @ApiProperty({ description: '菜单类型（1:目录, 2:菜单, 3:按钮）', enum: [1, 2, 3] })
-  @IsEnum([1, 2, 3])
+  @IsOptional()
   type: number;
 
   @ApiProperty({ description: '菜单图标', required: false })
   @IsOptional()
-  @IsString()
   icon?: string;
 
   @ApiProperty({ description: '权限标识', required: false })

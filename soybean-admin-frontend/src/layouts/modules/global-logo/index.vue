@@ -28,12 +28,14 @@ const titleClass = computed(() =>
     ? 'pt-4px text-center text-12px text-primary font-bold leading-14px transition duration-300 ease-in-out break-words'
     : 'pl-10px text-15px text-primary font-bold transition duration-300 ease-in-out'
 );
+
+const showTitleComputed = computed(() => props.showTitle && !props.collapsed);
 </script>
 
 <template>
   <RouterLink to="/" :class="wrapperClass">
     <SystemLogo class="size-32px flex-shrink-0" />
-    <h2 v-show="showTitle" :class="titleClass">
+    <h2 v-show="showTitleComputed" :class="titleClass">
       {{ $t('system.title') }}
     </h2>
   </RouterLink>

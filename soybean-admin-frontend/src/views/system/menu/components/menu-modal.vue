@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch, h } from 'vue';
 import {
   NButton,
   NForm,
@@ -10,12 +10,14 @@ import {
   NModal,
   NRadio,
   NRadioGroup,
-  NScrollbar,
   NSpace,
   NSwitch,
-  NTreeSelect
+  NTreeSelect,
+  NAutoComplete
 } from 'naive-ui';
+import type { AutoCompleteOption } from 'naive-ui';
 import { fetchCreateMenu, fetchMenuDetail, fetchMenuTree, fetchUpdateMenu } from '@/service/api/menu';
+import { useRouteStore } from '@/store/modules/route';
 import { useFormRules, useNaiveForm } from '@/hooks/common/form';
 import { $t } from '@/locales';
 import SvgIcon from '@/components/custom/svg-icon.vue';
@@ -39,6 +41,7 @@ const visible = defineModel<boolean>('visible', { default: false });
 
 const { formRef, validate, restoreValidation } = useNaiveForm();
 const { defaultRequiredRule } = useFormRules();
+const routeStore = useRouteStore();
 
 type Model = Omit<
   Pick<
@@ -60,6 +63,7 @@ type Model = Omit<
   type: '1' | '2' | '3';
   status: '1' | '0';
   visible: boolean;
+  icon: string;
 };
 
 const model: Model = reactive(createDefaultModel());
@@ -80,58 +84,98 @@ function createDefaultModel(): Model {
   };
 }
 
-const LOCAL_ICON_PREFIX = 'local:';
-
 function parseMenuIcon(value: string) {
-  const trimmed = value.trim();
-  if (!trimmed) return { icon: '', localIcon: '' };
-  if (trimmed.startsWith(LOCAL_ICON_PREFIX)) {
-    return { icon: '', localIcon: trimmed.slice(LOCAL_ICON_PREFIX.length) };
-  }
-  return { icon: trimmed, localIcon: '' };
+  const trimmed = (value || '').trim();
+  return trimmed;
 }
 
-const currentIconConfig = computed(() => parseMenuIcon(model.icon || ''));
+const currentIcon = computed(() => parseMenuIcon(model.icon || ''));
 
-const iconPickerVisible = ref(false);
-const iconKeyword = ref('');
+const googleIconNames = [
+  'home',
+  'settings',
+  'person',
+  'menu',
+  'close',
+  'search',
+  'check',
+  'delete',
+  'add',
+  'edit',
+  'star',
+  'favorite',
+  'share',
+  'more_vert',
+  'more_horiz',
+  'arrow_forward',
+  'arrow_back',
+  'expand_more',
+  'expand_less',
+  'visibility',
+  'visibility_off',
+  'warning',
+  'info',
+  'error',
+  'help',
+  'notifications',
+  'mail',
+  'call',
+  'send',
+  'download',
+  'upload',
+  'cloud',
+  'wifi',
+  'lock',
+  'unlock',
+  'key',
+  'flag',
+  'language',
+  'calendar_today',
+  'schedule',
+  'location_on',
+  'shopping_cart',
+  'credit_card',
+  'account_balance',
+  'dashboard',
+  'list',
+  'grid_view',
+  'view_list',
+  'view_module',
+  'view_quilt',
+  'view_carousel',
+  'view_column',
+  'view_headline',
+  'view_stream',
+  'view_agenda',
+  'view_day',
+  'view_week',
+  'view_sidebar'
+];
 
-const localSvgModules = import.meta.glob('/src/assets/svg-icon/*.svg', { eager: true });
+const iconAutoCompleteOptions = computed(() => {
+  const iconText = (model.icon || '').trim().toLocaleLowerCase();
 
-function getFileBaseName(filePath: string) {
-  const filename = filePath.split('/').pop() || filePath;
-  return filename.replace(/\.svg$/i, '');
-}
+  const options = googleIconNames
+    .filter(name => name.includes(iconText))
+    .map(name => ({
+      label: name,
+      value: name
+    }));
 
-const localIconOptions = computed(() => {
-  const names = Object.keys(localSvgModules).map(getFileBaseName);
-  const unique = Array.from(new Set(names));
-  return unique.sort((a, b) => {
-    const aIsGoogle = a.startsWith('google-');
-    const bIsGoogle = b.startsWith('google-');
-    if (aIsGoogle !== bIsGoogle) return aIsGoogle ? -1 : 1;
-    return a.localeCompare(b);
-  });
+  return options;
 });
 
-const filteredLocalIconOptions = computed(() => {
-  const keyword = iconKeyword.value.trim().toLocaleLowerCase();
-  if (!keyword) return localIconOptions.value;
-  return localIconOptions.value.filter(name => name.toLocaleLowerCase().includes(keyword));
-});
+function renderAutoCompleteOption(info: { option: AutoCompleteOption }) {
+  const { option } = info;
+  const value = String(option.value ?? '');
+  const label = String(option.label ?? value);
 
-function openIconPicker() {
-  iconPickerVisible.value = true;
-  iconKeyword.value = '';
-}
+  const icon = parseMenuIcon(value);
 
-function closeIconPicker() {
-  iconPickerVisible.value = false;
-}
-
-function handleSelectLocalIcon(name: string) {
-  model.icon = `${LOCAL_ICON_PREFIX}${name}`;
-  closeIconPicker();
+  return h('div', { class: 'flex-y-center gap-8px' }, [
+    h(SvgIcon, { icon, class: 'text-24px' }),
+    h('span', null, label)
+  ]);
 }
 
 const menuTree = ref<Api.SystemManage.Menu[]>([]);
@@ -178,13 +222,33 @@ const title = computed(() => {
 async function handleSubmit() {
   await validate();
 
+  // 构造提交数据，只包含后端 DTO 定义的字段，避免 forbidNonWhitelisted 报错
+  const submitModel: any = {
+    name: model.name,
+    parentId: model.parentId && String(model.parentId).trim() !== '' ? model.parentId : null,
+    type: Number(model.type),
+    path: model.path,
+    component: model.component,
+    icon: model.icon,
+    permission: model.permission,
+    sort: Number(model.sort),
+    status: Number(model.status),
+    visible: model.visible ? 1 : 0,
+    remark: model.remark
+  };
+
   const { error } =
-    props.type === 'add' ? await fetchCreateMenu(model) : await fetchUpdateMenu(props.editData!.id, model);
+    props.type === 'add' ? await fetchCreateMenu(submitModel) : await fetchUpdateMenu(props.editData!.id, submitModel);
 
   if (!error) {
     window.$message?.success($t('common.submitSuccess'));
     closeModal();
     emit('submitted');
+
+    // 更新菜单后刷新路由，以便侧边栏图标立即更新
+    await routeStore.initAuthRoute();
+  } else {
+    window.$message?.error($t('common.error'));
   }
 }
 
@@ -230,7 +294,7 @@ async function handleUpdateModelWhenEdit() {
   } else if (props.type === 'add' && props.editData) {
     // This is for "Add child menu"
     Object.assign(model, createDefaultModel());
-    model.parentId = props.editData.parentId;
+    model.parentId = props.editData.id || props.editData.parentId;
   } else {
     Object.assign(model, createDefaultModel());
   }
@@ -277,23 +341,32 @@ watch(visible, async () => {
           <NInput v-model:value="model.component" :placeholder="$t('page.manage.menu.form.component')" />
         </NFormItemGi>
         <NFormItemGi v-if="model.type !== '3'" :span="12" :label="$t('page.manage.menu.icon')" path="icon">
-          <NInput
+          <NAutoComplete
             v-model:value="model.icon"
+            :options="iconAutoCompleteOptions"
             :placeholder="$t('page.manage.menu.form.icon')"
-            readonly
+            :render-option="renderAutoCompleteOption"
             clearable
-            class="cursor-pointer"
-            @click="openIconPicker"
           >
-            <template #prefix>
-              <SvgIcon
-                v-if="model.icon"
-                :icon="currentIconConfig.icon"
-                :local-icon="currentIconConfig.localIcon"
-                class="text-icon"
-              />
+            <template #default="{ handleInput, handleBlur, handleFocus }">
+              <NInput
+                :value="model.icon"
+                :placeholder="$t('page.manage.menu.form.icon')"
+                @input="
+                  val => {
+                    model.icon = val;
+                    handleInput(val);
+                  }
+                "
+                @focus="handleFocus"
+                @blur="handleBlur"
+              >
+                <template #suffix>
+                  <SvgIcon v-if="currentIcon" :icon="currentIcon" class="text-30px" />
+                </template>
+              </NInput>
             </template>
-          </NInput>
+          </NAutoComplete>
         </NFormItemGi>
         <NFormItemGi :span="12" :label="$t('page.manage.menu.permission')" path="permission">
           <NInput v-model:value="model.permission" :placeholder="$t('page.manage.menu.form.permission')" />
@@ -319,36 +392,6 @@ watch(visible, async () => {
         <NButton type="primary" @click="handleSubmit">{{ $t('common.confirm') }}</NButton>
       </NSpace>
     </NForm>
-  </NModal>
-
-  <NModal v-model:show="iconPickerVisible" preset="card" :title="$t('page.manage.menu.icon')" class="w-720px">
-    <div class="flex-col-stretch gap-12px">
-      <NInput v-model:value="iconKeyword" :placeholder="$t('common.keywordSearch')" clearable>
-        <template #prefix>
-          <SvgIcon icon="ic:round-search" class="text-15px text-#c2c2c2" />
-        </template>
-      </NInput>
-      <div class="h-420px overflow-hidden border-1px border-#efeff5 rounded-6px dark:border-#ffffff1a">
-        <NScrollbar class="h-full">
-          <div class="grid grid-cols-8 gap-8px p-12px lt-sm:grid-cols-4">
-            <div
-              v-for="name in filteredLocalIconOptions"
-              :key="name"
-              class="flex-col-center cursor-pointer gap-6px rounded-6px p-8px transition-200 hover:bg-#f3f4f6 dark:hover:bg-#ffffff14"
-              @click="handleSelectLocalIcon(name)"
-            >
-              <SvgIcon :local-icon="name" class="text-22px" />
-              <div class="w-full truncate text-center text-12px text-#606266 dark:text-#ffffffa6">
-                {{ name }}
-              </div>
-            </div>
-          </div>
-        </NScrollbar>
-      </div>
-      <NSpace justify="end">
-        <NButton @click="closeIconPicker">{{ $t('common.close') }}</NButton>
-      </NSpace>
-    </div>
   </NModal>
 </template>
 

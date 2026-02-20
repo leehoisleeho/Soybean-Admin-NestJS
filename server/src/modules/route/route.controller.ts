@@ -4,13 +4,13 @@ import { RouteService } from './route.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('路由管理')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('route')
 export class RouteController {
   constructor(private readonly routeService: RouteService) { }
 
   @ApiOperation({ summary: '获取用户路由' })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @Get('getUserRoutes')
   async getUserRoutes(@Request() req) {
     return this.routeService.getUserRoutes(req.user.id);

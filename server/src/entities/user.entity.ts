@@ -25,7 +25,7 @@ export class UserEntity {
 
   @ApiProperty({ description: '密码' })
   @IsString()
-  @Column({ length: 255, comment: '密码' })
+  @Column({ length: 255, comment: '密码', select: false })
   password: string;
 
   @ApiProperty({ description: '昵称', required: false })

@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Soybean Admin" src="./soybean-admin-frontend/src/assets/imgs/logo.png" width="100">
+  <img alt="Soybean Admin" src="./soybean-admin/src/assets/imgs/logo.png" width="100">
   <h1>Soybean Admin NestJS</h1>
   <p>基于 <b>Soybean Admin</b> 与 <b>NestJS</b> 构建的全栈后台管理系统</p>
 
@@ -22,16 +22,16 @@
 > [!IMPORTANT]
 > **注意**：本项目强制要求使用 **pnpm** 管理依赖。请勿使用 npm 或 yarn。
 
-- **前端**：`soybean-admin-frontend` (Vue3 + Vite + TypeScript)
-- **后端**：`soybean-admin-backend` (NestJS + TypeORM + MySQL + JWT)
+- **前端**：`soybean-admin` (Vue3 + Vite + TypeScript)
+- **后端**：`server` (NestJS + TypeORM + MySQL + JWT)
 
 ## 📦 目录结构
 
 ```text
 .
-├── soybean-admin-frontend/   # 前端项目 (Vite dev 默认 9527)
-├── soybean-admin-backend/    # 后端项目 (Nest dev 默认 3000, API 前缀 /api)
-└── init_data.sql             # 可选：SQL 方式初始化基础数据
+├── soybean-admin/   # 前端项目 (Vite dev 默认 9527)
+├── server/          # 后端项目 (Nest dev 默认 3000, API 前缀 /api)
+└── README.md
 ```
 
 ## 🛠️ 环境要求
@@ -57,11 +57,11 @@ CREATE DATABASE IF NOT EXISTS `soybean_admin` DEFAULT CHARACTER SET utf8mb4 COLL
 进入后端目录并安装依赖：
 
 ```bash
-cd soybean-admin-backend
+cd server
 pnpm install
 ```
 
-配置后端环境变量（编辑 `soybean-admin-backend/.env`）：
+配置后端环境变量（编辑 `server/.env`）：
 
 ```env
 PORT=3000
@@ -75,6 +75,8 @@ DB_NAME=soybean_admin
 
 JWT_SECRET=soybean_admin_secret
 JWT_EXPIRES_IN=7d
+JWT_REFRESH_SECRET=soybean_admin_refresh_secret
+JWT_REFRESH_EXPIRES_IN=30d
 ```
 
 初始化基础数据（写入角色、菜单、管理员账号等）：
@@ -97,7 +99,7 @@ pnpm run start:dev
 进入前端目录并安装依赖：
 
 ```bash
-cd ../soybean-admin-frontend
+cd ../soybean-admin
 pnpm install
 ```
 
@@ -116,7 +118,7 @@ pnpm dev
 
 ## 📝 常用命令汇总
 
-| 任务 | 后端 (soybean-admin-backend) | 前端 (soybean-admin-frontend) |
+| 任务 | 后端 (server) | 前端 (soybean-admin) |
 | :--- | :--- | :--- |
 | **安装依赖** | `pnpm install` | `pnpm install` |
 | **启动开发服务** | `pnpm run start:dev` | `pnpm dev` |
@@ -134,7 +136,7 @@ pnpm dev
 
 ### 方式 1：后端 Seed (推荐)
 
-在 `soybean-admin-backend` 目录下执行：`pnpm run seed`
+在 `server` 目录下执行：`pnpm run seed`
 
 脚本会创建：
 - **角色**：`R_SUPER` (超级管理员)、`R_USER` (普通用户)
@@ -143,8 +145,10 @@ pnpm dev
 
 ### 方式 2：SQL 初始化 (可选)
 
-1. 执行后端脚本：`soybean-admin-backend/init.sql`
-2. 执行根目录数据脚本：`init_data.sql`
+执行合并脚本（建表 + 种子数据一步到位）：
+```bash
+mysql -u root -p < server/init.sql
+```
 
 ---
 
@@ -165,10 +169,10 @@ pnpm dev
 ### 1. 后端部署 (NestJS)
 
 **建议上传的文件清单：**
-- `soybean-admin-backend/dist/` (构建后的 JS 文件)
-- `soybean-admin-backend/package.json`
-- `soybean-admin-backend/pnpm-lock.yaml`
-- `soybean-admin-backend/.env` (生产环境配置)
+- `server/dist/` (构建后的 JS 文件)
+- `server/package.json`
+- `server/pnpm-lock.yaml`
+- `server/.env` (生产环境配置)
 
 **部署步骤：**
 1. **环境准备**：确保服务器已安装 Node.js (>=20), MySQL (>=8.0), PM2。

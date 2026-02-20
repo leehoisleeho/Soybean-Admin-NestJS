@@ -48,7 +48,10 @@ export class UserService {
       user.roles = roles;
     }
 
-    return this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _, ...result } = savedUser;
+    return result;
   }
 
   /**
@@ -151,7 +154,8 @@ export class UserService {
   async resetPassword(id: string, resetPasswordDto: ResetPasswordDto) {
     const user = await this.findOne(id);
     user.password = await bcrypt.hash(resetPasswordDto.password, 10);
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+    return { message: '密码重置成功' };
   }
 
   /**

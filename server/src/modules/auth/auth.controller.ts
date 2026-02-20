@@ -27,11 +27,10 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
    
   async login(@Body() loginDto: LoginDto, @Req() req: any) {
-     
     const result = await this.authService.login(req.user);
     return {
       token: result.access_token,
-      refreshToken: result.access_token, // 简单实现，暂用同一个
+      refreshToken: result.refresh_token,
     };
   }
 
@@ -45,8 +44,8 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('getUserInfo')
-  async getUserInfo(@CurrentUser() user: UserEntity) {
-    return this.authService.getUserInfo(user.id);
+  getUserInfo(@CurrentUser() user: UserEntity) {
+    return this.authService.getUserInfo(user);
   }
 
   @ApiOperation({ summary: '获取用户信息 (profile)' })
@@ -67,11 +66,13 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: '刷新 Token' })
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Post('refresh')
+  @Post('refreshToken')
   @HttpCode(HttpStatus.OK)
-  async refresh(@CurrentUser() user: UserEntity) {
-    return this.authService.refreshToken(user);
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    const result = await this.authService.refreshToken(refreshToken);
+    return {
+      token: result.access_token,
+      refreshToken: result.refresh_token,
+    };
   }
 }

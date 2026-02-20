@@ -81,36 +81,65 @@ export class MenuService {
   }
 
   /**
-   * 递归构建树形结构的递归函数
+   * 通用树构建方法
+   * @param items 数据项数组
+   * @param getId 获取项 ID 的函数
+   * @param getParentId 获取项父 ID 的函数
+   * @returns 树形结构数组
    */
-  private buildTree(menus: MenuEntity[]): any[] {
-    const normalizedMenus = this.normalizeMenus(menus);
-    const idSet = new Set(normalizedMenus.map((m) => m.id));
+  private buildTreeFromList<T extends Record<string, any>>(
+    items: T[],
+    getId: (item: T) => string | null,
+    getParentId: (item: T) => string | null,
+  ): T[] {
+    // 构建 ID 集合，用于验证 parentId 是否有效
+    const idSet = new Set<string>();
+    for (const item of items) {
+      const id = getId(item);
+      if (id) idSet.add(id);
+    }
 
-    const list = normalizedMenus.map((m) => {
-      const parentId = this.normalizeId(m.parentId);
+    // 规范化 ID 和 parentId，无效的 parentId 设为 null
+    const list = items.map((item) => {
+      const id = getId(item);
+      const parentId = getParentId(item);
       const effectiveParentId = parentId && idSet.has(parentId) ? parentId : null;
-      return { ...m, parentId: effectiveParentId };
+      return { ...item, id, parentId: effectiveParentId };
     });
 
+    // 按 parentId 分组
     const childrenByParentId = new Map<string | null, any[]>();
-    for (const menu of list) {
-      const key = menu.parentId ?? null;
+    for (const item of list) {
+      const key = item.parentId ?? null;
       const arr = childrenByParentId.get(key) || [];
-      arr.push(menu);
+      arr.push(item);
       childrenByParentId.set(key, arr);
     }
 
-    const attachChildren = (node: any) => {
+    // 递归附加子节点
+    const attachChildren = (node: any): any => {
       const kids = childrenByParentId.get(node.id) || [];
       if (kids.length) {
-        node.children = kids.map((k) => attachChildren(k));
+        node.children = kids.map((k: any) => attachChildren(k));
       }
       return node;
     };
 
+    // 返回根节点树
     const roots = childrenByParentId.get(null) || [];
     return roots.map((r) => attachChildren(r));
+  }
+
+  /**
+   * 递归构建树形结构的递归函数
+   */
+  private buildTree(menus: MenuEntity[]): any[] {
+    const normalizedMenus = this.normalizeMenus(menus);
+    return this.buildTreeFromList(
+      normalizedMenus,
+      (m) => this.normalizeId(m.id),
+      (m) => this.normalizeId(m.parentId),
+    );
   }
 
   /**
@@ -160,36 +189,11 @@ export class MenuService {
    * 构建 SoybeanAdmin 树形结构
    */
   private buildSoybeanTree(menus: any[]): any[] {
-    const idSet = new Set<string>();
-    for (const menu of menus) {
-      if (menu?.id) idSet.add(String(menu.id).trim());
-    }
-
-    const list = menus.map((m) => {
-      const id = m?.id ? String(m.id).trim() : m.id;
-      const parentId = m?.parentId ? String(m.parentId).trim() : null;
-      const effectiveParentId = parentId && idSet.has(parentId) ? parentId : null;
-      return { ...m, id, parentId: effectiveParentId };
-    });
-
-    const childrenByParentId = new Map<string | null, any[]>();
-    for (const menu of list) {
-      const key = menu.parentId ?? null;
-      const arr = childrenByParentId.get(key) || [];
-      arr.push(menu);
-      childrenByParentId.set(key, arr);
-    }
-
-    const attachChildren = (node: any) => {
-      const kids = childrenByParentId.get(node.id) || [];
-      if (kids.length) {
-        node.children = kids.map((k) => attachChildren(k));
-      }
-      return node;
-    };
-
-    const roots = childrenByParentId.get(null) || [];
-    return roots.map((r) => attachChildren(r));
+    return this.buildTreeFromList(
+      menus,
+      (m) => (m?.id ? String(m.id).trim() : null),
+      (m) => (m?.parentId ? String(m.parentId).trim() : null),
+    );
   }
 
   private normalizeId(value: string | null | undefined): string | null {

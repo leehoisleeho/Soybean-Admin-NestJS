@@ -25,5 +25,10 @@ pnpm-debug.log*
 /dist
 /node_modules
 
+# Environment variables
+.env
+.env.*
+!.env.example
+
 # TypeScript
 *.tsbuildinfo

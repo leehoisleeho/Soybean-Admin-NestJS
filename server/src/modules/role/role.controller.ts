@@ -15,15 +15,18 @@ import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto, AssignMenusDto, BatchDeleteRoleDto } from './dto/update-role.dto';
 import { QueryRoleDto } from './dto/query-role.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../../common/guards/permissions.guard';
+import { RequirePermissions } from '../../common/decorators/permissions.decorator';
 
 @ApiTags('角色管理')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) { }
 
   @ApiOperation({ summary: '创建角色' })
+  @RequirePermissions('sys:role:add')
   @Post()
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
@@ -42,24 +45,28 @@ export class RoleController {
   }
 
   @ApiOperation({ summary: '更新角色' })
+  @RequirePermissions('sys:role:edit')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     return this.roleService.update(id, updateRoleDto);
   }
 
   @ApiOperation({ summary: '批量删除角色' })
+  @RequirePermissions('sys:role:delete')
   @Delete('batch')
   removeMany(@Body() batchDeleteRoleDto: BatchDeleteRoleDto) {
     return this.roleService.removeMany(batchDeleteRoleDto.ids);
   }
 
   @ApiOperation({ summary: '删除角色' })
+  @RequirePermissions('sys:role:delete')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.roleService.remove(id);
   }
 
   @ApiOperation({ summary: '分配菜单权限' })
+  @RequirePermissions('sys:role:edit')
   @Post(':id/menus')
   assignMenus(@Param('id') id: string, @Body() assignMenusDto: AssignMenusDto) {
     return this.roleService.assignMenus(id, assignMenusDto);
